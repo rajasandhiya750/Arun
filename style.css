@@ -1,0 +1,119 @@
+:root {
+  /* JS will update these properties on mouse move */
+  --mouseX: 0;
+  --mouseY: 0;
+
+  --frame-depth: 40px;
+  --max-rotation: 30deg;
+
+  --base-hue: 240; /* Starting hue (a rich blue/violet) */
+  --hue-step: 20; /* How much the hue shifts per frame */
+}
+
+.tunnel-wrapper-interactive {
+  min-height: 500px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+  outline: 1px dashed #0003;
+}
+
+.tunnel-container-interactive {
+  perspective: 800px;
+  transform-style: preserve-3d;
+  position: relative;
+  width: 350px;
+  height: 350px;
+  transform: rotateX(calc(var(--mouseY) * var(--max-rotation) * -1))
+    rotateY(calc(var(--mouseX) * var(--max-rotation)));
+  transition: transform 0.5s ease-out;
+}
+
+.tunnel-frame-interactive {
+  position: absolute;
+  inset: 0;
+
+  /*  Calculate the unique hue for this specific frame. */
+  --frame-hue: calc(var(--base-hue) + (sibling-index() - 1) * var(--hue-step));
+
+  /*  use the calculated --frame-hue in oklch() to create a rainbow pattern. */
+  --tunnel-gradient: linear-gradient(
+    45deg,
+    oklch(70% 0.25 var(--frame-hue)),
+    oklch(70% 0.25 calc(var(--frame-hue) + 45))
+  );
+
+  /* Hllow frame */
+  border: 6px solid;
+  border-image-source: var(--tunnel-gradient);
+  border-image-slice: 1;
+  border-radius: 25px;
+
+  /*  Make the glow match the frame color */
+  box-shadow: 0 0 30px oklch(70% 0.25 var(--frame-hue) / 0.5);
+  transform: translateZ(calc(-1 * var(--frame-depth) * (sibling-index() - 1)));
+  opacity: calc(1.1 - (sibling-index() / sibling-count()));
+}
+
+@layer basestyles {
+  :root {
+    --bg-color: #f0f2f5;
+    --text-color: #333;
+    --accent-grad: linear-gradient(160deg, #ff7e9b, #8a7eff);
+  }
+
+  body {
+    font-family: "Poppins", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 3rem 1rem;
+    display: grid;
+    gap: 3.5rem;
+    justify-items: center;
+  }
+
+  .demo-container {
+    width: 100%;
+    max-width: 650px;
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #666;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  code {
+    background-color: #e2e5e9;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background-image: var(--accent-grad);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 0 0.5rem 1.5rem;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px B20px rgba(138, 126, 255, 0.4);
+    }
+  }
+}
